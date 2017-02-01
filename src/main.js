@@ -20,7 +20,7 @@ function createWindow() {
     }))
 
     // Open the DevTools.
-    //win.webContents.openDevTools()
+    win.webContents.openDevTools()
 
     ipc.on('invokeAction', function (event, data) {
         console.log(this, event, data, event.sender);
