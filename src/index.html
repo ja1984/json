@@ -2,10 +2,59 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
-    <link rel="stylesheet" href="styles/codemirror.css">
-    <style>
+	<meta charset="UTF-8">
+	<title>Hello World!</title>
+	<link rel="stylesheet" href="styles/codemirror.css">
+	<link rel="stylesheet" href="styles/themes/3024-day.css">
+	<link rel="stylesheet" href="styles/themes/3024-night.css">
+	<link rel="stylesheet" href="styles/themes/abcdef.css">
+	<link rel="stylesheet" href="styles/themes/ambiance.css">
+	<link rel="stylesheet" href="styles/themes/base16-dark.css">
+	<link rel="stylesheet" href="styles/themes/base16-light.css">
+	<link rel="stylesheet" href="styles/themes/bespin.css">
+	<link rel="stylesheet" href="styles/themes/blackboard.css">
+	<link rel="stylesheet" href="styles/themes/cobalt.css">
+	<link rel="stylesheet" href="styles/themes/colorforth.css">
+	<link rel="stylesheet" href="styles/themes/dracula.css">
+	<link rel="stylesheet" href="styles/themes/duotone-dark.css">
+	<link rel="stylesheet" href="styles/themes/duotone-light.css">
+	<link rel="stylesheet" href="styles/themes/eclipse.css">
+	<link rel="stylesheet" href="styles/themes/elegant.css">
+
+	<link rel="stylesheet" href="styles/themes/erlang-dark.css">
+	<link rel="stylesheet" href="styles/themes/hopscotch.css">
+	<link rel="stylesheet" href="styles/themes/icecoder.css">
+	<link rel="stylesheet" href="styles/themes/isotope.css">
+	<link rel="stylesheet" href="styles/themes/lesser-dark.css">
+	<link rel="stylesheet" href="styles/themes/liquibyte.css">
+	<link rel="stylesheet" href="styles/themes/material.css">
+	<link rel="stylesheet" href="styles/themes/mbo.css">
+	<link rel="stylesheet" href="styles/themes/mdn-like.css">
+	<link rel="stylesheet" href="styles/themes/midnight.css">
+	<link rel="stylesheet" href="styles/themes/monokai.css">
+	<link rel="stylesheet" href="styles/themes/neat.css">
+	<link rel="stylesheet" href="styles/themes/neo.css">
+	<link rel="stylesheet" href="styles/themes/night.css">
+	<link rel="stylesheet" href="styles/themes/panda-syntax.css">
+	<link rel="stylesheet" href="styles/themes/paraiso-dark.css">
+	<link rel="stylesheet" href="styles/themes/paraiso-light.css">
+	<link rel="stylesheet" href="styles/themes/pastel-on-dark.css">
+	<link rel="stylesheet" href="styles/themes/railscasts.css">
+	<link rel="stylesheet" href="styles/themes/rubyblue.css">
+	<link rel="stylesheet" href="styles/themes/seti.css">
+	<link rel="stylesheet" href="styles/themes/solarized.css">
+	<link rel="stylesheet" href="styles/themes/the-matrix.css">
+	<link rel="stylesheet" href="styles/themes/tomorrow-night-bright.css">
+	<link rel="stylesheet" href="styles/themes/tomorrow-night-eighties.css">
+	<link rel="stylesheet" href="styles/themes/ttcn.css">
+	<link rel="stylesheet" href="styles/themes/twilight.css">
+	<link rel="stylesheet" href="styles/themes/vibrant-ink.css">
+	<link rel="stylesheet" href="styles/themes/xq-dark.css">
+	<link rel="stylesheet" href="styles/themes/xq-light.css">
+	<link rel="stylesheet" href="styles/themes/yeti.css">
+	<link rel="stylesheet" href="styles/themes/zenburn.css">
+	
+	<style>
     body{
         margin: 0;
         padding: 0;
@@ -32,29 +81,92 @@
 </head>
 
 <body>
-    <div class="wrapper">
-        <section>
-            <textarea id="editor"></textarea>
+	<div class="wrapper">
+		<section>
+			<textarea id="editor"></textarea>
 
-        </section>
-        <section>
-            <div></div>
-        </section>
+		</section>
+		<section>
+			<div></div>
+		</section>
 
 
-    </div>
+	</div>
 </body>
 
 <script src="scripts/codemirror.js"></script>
 <script src="scripts/mode/javascript.js"></script>
 <script>
-    //var ipc = require('electron').ipcRenderer;
-    //var editor = document.getElementById('editor');
-    var editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-        lineNumbers: true,
-        tabSize: 2,
-        mode: {name: "javascript", json: true}
-    });
+
+	var App = function () {
+		var priv = {};
+		var pub = {};
+
+		priv.buildTree = function (data) {
+			for (prop in data) {
+				if (data.hasOwnProperty(prop) && isNaN(prop)) {
+					console.log(prop + ': ' + data[prop], priv.getTypeName(data[prop]));
+					priv.buildTree(data[prop]);
+				}
+			}
+		}
+
+		priv.formatJson = function () {
+			console.log('Format json');
+			priv.editor.operation(function(){
+				for(var i = 0; i < priv.editor.lineCount(); i++){
+					priv.editor.indentLine(i,'smart');
+				}
+			});
+			//for (var i = 0; i < priv.editor.lineCount(); i++) { priv.editor.indentLine(i, 'smart'); }
+		}
+
+		priv.getTypeName = function (object) {
+			const objectToString = Object.prototype.toString.call(object).slice(8, -1);
+			if (objectToString === "Function") {
+				const instanceToString = object.toString();
+				if (instanceToString.indexOf(" => ") != -1)
+					return "ArrowFunction";
+				const getFunctionName = /^function ([^(]+)\(/;
+				const match = instanceToString.match(getFunctionName);
+				if (match === null)
+					return "AnonymousFunction";
+				return "Function";
+			}
+			// Built-in types (e.g. String) or class instances
+			return objectToString;
+		}
+
+
+		pub.init = function () {
+			priv.editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+				lineNumbers: true,
+				tabSize: 2,
+				mode: { name: "javascript", json: true },
+				theme: 'monokai'
+			});
+
+			priv.editor.on('change', function (a, b, c, d, e, f) {
+				console.log(a, b);
+
+				if (b.origin === 'paste')
+					priv.formatJson();
+
+				var jsObject = JSON.parse(priv.editor.getValue());
+				console.log(jsObject);
+
+				if (jsObject)
+					priv.buildTree(jsObject);
+			});
+		}
+
+		return pub;
+	} ();
+
+	new App.init();
+
+	//var ipc = require('electron').ipcRenderer;
+
     // editor.addEventListener('keyup', function () {
     //     console.log(this.textContent);
     //     //  ipc.once('actionReply', function(event, response){
