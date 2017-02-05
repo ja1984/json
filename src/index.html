@@ -5,6 +5,7 @@
 	<meta charset="UTF-8">
 	<title>Hello World!</title>
 	<link rel="stylesheet" href="styles/codemirror.css">
+	<link rel="stylesheet" href="fonts/open-sans/open-sans.css">
 	<link rel="stylesheet" href="styles/themes/3024-day.css">
 	<link rel="stylesheet" href="styles/themes/3024-night.css">
 	<link rel="stylesheet" href="styles/themes/abcdef.css">
@@ -20,7 +21,6 @@
 	<link rel="stylesheet" href="styles/themes/duotone-light.css">
 	<link rel="stylesheet" href="styles/themes/eclipse.css">
 	<link rel="stylesheet" href="styles/themes/elegant.css">
-
 	<link rel="stylesheet" href="styles/themes/erlang-dark.css">
 	<link rel="stylesheet" href="styles/themes/hopscotch.css">
 	<link rel="stylesheet" href="styles/themes/icecoder.css">
@@ -53,13 +53,19 @@
 	<link rel="stylesheet" href="styles/themes/xq-light.css">
 	<link rel="stylesheet" href="styles/themes/yeti.css">
 	<link rel="stylesheet" href="styles/themes/zenburn.css">
-	
+
 	<style>
     body{
         margin: 0;
         padding: 0;
         width: 100%;
+		font-family: 'Open Sans';
     }
+
+	input:active, select:active,input:focus, select:focus{
+		outline: none;
+	}
+
         .wrapper{
              display: flex;
             height: 100vh;
@@ -77,6 +83,46 @@
         .wrapper section div:active,.wrapper section div:focus{
             outline: none;
         }
+
+		.modal-wrapper{
+			position: fixed;
+			top: 0;
+			left:0;
+			bottom:0;
+			right:0;
+			background: rgba(255,255,255,.8);
+			z-index: 100;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.modal-wrapper section{
+			padding: 1rem;
+			height: 15rem;
+			width: 25rem;
+			background: #fff;
+			border-radius: 4px;
+			box-shadow: 0 5px 4px rgba(0,0,0,.2);
+		}
+
+		.modal-wrapper section h1{
+			margin: 0;
+			border-bottom: 1px solid #eee;
+			padding-bottom: .5rem;
+			margin-bottom: .7rem;
+			font-weight: 100;
+		}
+
+		.modal-wrapper section.settings .setting{
+			margin-bottom: .5rem;
+		}
+
+		.modal-wrapper section.settings .setting input,.modal-wrapper section.settings .setting select{
+			width: 100%;
+			padding: .5rem;
+			border-radius: .2rem;
+		}
     </style>
 </head>
 
@@ -84,13 +130,21 @@
 	<div class="wrapper">
 		<section>
 			<textarea id="editor"></textarea>
-
 		</section>
 		<section>
 			<div></div>
 		</section>
+	</div>
 
-
+	<div class="modal-wrapper">
+		<section class="settings">
+			<h1>Preferences</h1>
+			<div class="setting">
+				<select>
+				<option>Test</option>
+			</select>
+			</div>
+		</section>
 	</div>
 </body>
 
@@ -113,9 +167,9 @@
 
 		priv.formatJson = function () {
 			console.log('Format json');
-			priv.editor.operation(function(){
-				for(var i = 0; i < priv.editor.lineCount(); i++){
-					priv.editor.indentLine(i,'smart');
+			priv.editor.operation(function () {
+				for (var i = 0; i < priv.editor.lineCount(); i++) {
+					priv.editor.indentLine(i, 'smart');
 				}
 			});
 			//for (var i = 0; i < priv.editor.lineCount(); i++) { priv.editor.indentLine(i, 'smart'); }
