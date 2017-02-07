@@ -274,7 +274,9 @@
 
 
                 }
+                console.log("test loop");
             });
+            console.log("test");
         }
 
         priv.addElement = function (text, parent) {
@@ -330,6 +332,7 @@
                     if (change.origin === 'paste') {
                         priv.formatInput(jsObject);
                     } else {
+                        var fragment = document.createDocumentFragment();
                         var result = document.getElementById("result");
                         //result.appendChild(result)
 
@@ -337,7 +340,12 @@
                             result.removeChild(result.firstChild);
                         }
 
-                        priv.buildTree(jsObject, result);
+                        priv.buildTree(jsObject, fragment);
+
+                        //setTimeout(function(){
+                            result.appendChild(fragment);
+                        //},1000);
+
                     }
 
                 }
